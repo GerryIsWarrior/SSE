@@ -1,0 +1,24 @@
+{
+  "name": "sse-js",
+  "version": "0.0.1",
+  "description": "Server-Sent Events",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GerryIsWarrior/SSE.git"
+  },
+  "keywords": [
+    "sse",
+    "javascript",
+    "EventSource"
+  ],
+  "author": "gerry.zhong",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GerryIsWarrior/SSE/issues"
+  },
+  "homepage": "https://github.com/GerryIsWarrior/SSE#readme"
+}
