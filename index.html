@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试页面</title>
+</head>
+<body>
+
+</body>
+</html>
+<script src="js-common/SSE.js"></script>
+<script>
+    SSE.create({
+        url:'http://localhost:8888',
+        data:{name:'gerryT'},
+        messageEvent:function (res) {
+            console.log("获得数据："+res.data)
+        }
+    })
+</script>
