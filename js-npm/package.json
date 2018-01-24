@@ -1,6 +1,6 @@
 {
   "name": "sse-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Server-Sent Events",
   "main": "index.js",
   "scripts": {

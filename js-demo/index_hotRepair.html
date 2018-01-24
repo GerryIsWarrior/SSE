@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE技术</title>
+</head>
+<body>
+<div>
+    <strong>用户在线代码热修复或者让用户强制重启</strong>
+    <div>
+        <input id="money" placeholder="输入金额"/>
+        <button onclick="testCache_click()">
+            测试按钮，测试代码热修复和强制重新请求
+        </button>
+    </div>
+    <div>折扣后的金额为：</div>
+    <div id="domUpdate"></div>
+</div>
+</body>
+</html>
+<script src='SSE.js'></script>
+<script src='ajax.1.7.js'></script>
+<script>
+  (function () {
+    localStorage.setItem('dom','我是基础缓存哦')
+  })()
+
+  var discount = 8          // 计算金钱的折扣
+
+  // 测试的单机事件
+  function testCache_click() {
+    var money = document.querySelector('#money').value
+    document.querySelector('#domUpdate').innerHTML = money * discount / 10
+  }
+
+
+  // 建立远程连接
+  SSE.create({
+    url:'http://localhost:8076',
+    data:{ name:'cache' },
+    openEvent:function (res) {
+      console.log('开启事件')
+      console.log(res)
+    },
+    messageEvent:function(res){
+      // 线上代码热修复
+//      discount = Number(res.data)
+      // 强制用户刷新新的页面
+      alert('线上代码更新，你给老子滚进新的页面去玩')
+      location.reload()
+    },
+    errorEvent:function(res){
+      console.log('错误事件')
+      console.log(res)
+    }
+  })
+</script>

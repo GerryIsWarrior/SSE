@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE技术</title>
+    <style>
+        input {
+            outline: none;
+        }
+
+        textarea {
+            outline: none;
+        }
+
+        textarea {
+            resize: none;
+        }
+
+        .showCenter button {
+            color: #fff;
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-image: none;
+            border: 1px solid transparent;
+            -webkit-appearance: button;
+            text-transform: none;
+            overflow: visible;
+            padding: 10px 16px;
+            font-size: 18px;
+            line-height: 1.3333333;
+            border-radius: 6px;
+        }
+
+        .formStyle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            margin: auto;
+            width: 700px;
+            height: 500px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+        }
+
+        .chatHeader {
+            height: 75px;
+            border-bottom: 1px solid #E2E2E2;
+        }
+
+        .userInfo {
+            position: absolute;
+            left: 20px;
+            top: 25px;
+            font-size: 20px;
+        }
+
+        .userIP {
+            position: absolute;
+            right: 20px;
+            top: 25px;
+            font-size: 20px;
+        }
+
+        .chatBody {
+            height: 300px;
+            overflow-y: auto;
+        }
+
+        .chatBottom {
+            height: 125px;
+            border-top: 1px solid #E2E2E2;
+            text-align: center;
+        }
+
+        .chatBottom textarea {
+            border: 0;
+            width: 680px;
+            height: 70px;
+            margin: 0 auto;
+            font-size: 20px;
+        }
+
+        .chatBottom button {
+            color: #fff;
+            background-color: #5cb85c;
+            border-color: #4cae4c;
+            display: inline-block;
+            margin-bottom: 0;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            cursor: pointer;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            background-image: none;
+            border: 1px solid transparent;
+            -webkit-appearance: button;
+            text-transform: none;
+            overflow: visible;
+            padding: 5px 15px;
+            font-size: 16px;
+            line-height: 1.3333333;
+            border-radius: 6px;
+            position: absolute;
+            right: 20px;
+            bottom: 15px;
+        }
+
+        .userBorder {
+            margin: 5px 0;
+            padding-left: 5px;
+        }
+
+        .readName{
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: black;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .formBorder{
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            top:0;
+            margin: auto;
+            background-color: white;
+            display: flex;
+            width: 500px;
+            height: 300px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .messageBorder{
+            display: flex;
+        }
+        .messageBorderSelf{
+            display: flex;
+            flex-direction: row-reverse;
+        }
+        .author{
+            font-size: 16px;
+            margin: 0 5px;
+            color: blue;
+        }
+        .messageContent{
+            margin: 0 5px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="formStyle">
+    <div class="chatHeader">
+        <div class="userInfo">Welcome to chat room</div>
+        <div class="userIP">your name :<span id="nameShow"></span></div>
+    </div>
+    <div class="chatBody">
+        <div id="messageInfoBorder" class="userBorder">
+        </div>
+    </div>
+    <div class="chatBottom">
+        <textarea id="message"></textarea>
+        <button id="sendMessage" onclick="sendMessage()">发送消息</button>
+    </div>
+</div>
+
+
+<div class="readName"></div>
+<div class="formBorder">
+    <div><input id="nameInfo" type="text" placeholder="请输入姓名"/></div>
+    <div>
+        <button onclick="joinChat()">加入聊天室</button>
+    </div>
+</div>
+</body>
+</html>
+<script src='SSE.js'></script>
+<script src='ajax.1.7.js'></script>
+<script>
+
+    function joinChat(){
+      document.querySelector('.readName').style.display = 'none'
+      document.querySelector('.formBorder').style.display = 'none'
+
+      document.querySelector('#nameShow').textContent = window.userName = document.querySelector('#nameInfo').value
+
+      SSE.create({
+        url:'http://localhost:8074',
+        data:{ name:document.querySelector('#nameInfo').value },
+        openEvent:function (res) {
+          console.log('开启事件')
+          console.log(res)
+        },
+        messageEvent:function(res){
+          let temp = JSON.parse(res.data)
+          let divBorder = document.createElement('div')
+          divBorder.setAttribute('class','messageBorder')
+
+          let divName = document.createElement('div')
+          divName.setAttribute('class','author')
+          divName.textContent = temp.author
+
+          let midden = document.createElement('div')
+          midden.textContent = '：'
+
+          let divMessage = document.createElement('div')
+          divMessage.setAttribute('class','messageContent')
+          divMessage.textContent = temp.data
+
+          divBorder.appendChild(divName)
+          divBorder.appendChild(midden)
+          divBorder.appendChild(divMessage)
+
+
+          document.querySelector('#messageInfoBorder').appendChild(divBorder)
+        },
+        errorEvent:function(res){
+          console.log('错误事件')
+          console.log(res)
+        }
+      })
+    }
+
+    function sendMessage() {
+      let message = document.querySelector('#message').value
+      if (message !== ''){
+        let temp = {
+          name:window.userName,
+          message:message,
+          event:'message'
+        }
+        ajax.postJSON('http://localhost:8075',temp,function (res) {
+          let divBorder = document.createElement('div')
+          divBorder.setAttribute('class','messageBorderSelf')
+
+          let divName = document.createElement('div')
+          divName.setAttribute('class','author')
+          divName.textContent = window.userName
+
+          let midden = document.createElement('div')
+          midden.textContent = '：'
+
+          let divMessage = document.createElement('div')
+          divMessage.setAttribute('class','messageContent')
+          divMessage.textContent = message
+
+          divBorder.appendChild(divName)
+          divBorder.appendChild(midden)
+          divBorder.appendChild(divMessage)
+
+
+          document.querySelector('#messageInfoBorder').appendChild(divBorder)
+          document.querySelector('#message').value = ''
+
+        })
+      }
+
+    }
+
+</script>

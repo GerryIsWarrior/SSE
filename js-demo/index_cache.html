@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SSE技术</title>
+</head>
+<body>
+<div>
+    <strong>测试缓存更新，对在线用户推送更新</strong>
+    <button onclick="testCache_click()">
+        测试按钮，本地localStory混存dom更新
+    </button>
+    <div id="domUpdate"></div>
+</div>
+    <!--<iframe src="www.baidu.com"></iframe>-->
+</body>
+</html>
+<script src='SSE.js'></script>
+<script src='ajax.1.7.js'></script>
+<script>
+  (function () {
+    localStorage.setItem('dom','我是基础缓存哦')
+  })()
+
+  // 测试的单机事件
+  function testCache_click() {
+    var dom_t = localStorage.getItem('dom')
+    var node_id = document.querySelector('#domUpdate')
+    node_id.innerHTML = dom_t
+  }
+
+
+  // 建立远程连接
+  SSE.create({
+    url:'http://localhost:8076',
+    data:{ name:'cache' },
+    openEvent:function (res) {
+      console.log('开启事件')
+      console.log(res)
+    },
+    messageEvent:function(res){
+      // 接受数据，更新缓存
+      localStorage.setItem('dom',res.data)
+    },
+    errorEvent:function(res){
+      console.log('错误事件')
+      console.log(res)
+    }
+  })
+</script>
