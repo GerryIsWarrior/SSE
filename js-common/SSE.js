@@ -129,8 +129,10 @@
   // 抛出对象
   var output = {
     create:function (options) {
+      // 处理参数
       var param = tool.initParam(options),sendData = '';
 
+      // 是否有url传值
       if (param.data){
         tool.each(param.data, function (item, index) {
           sendData += (index + "=" + item + "&")
@@ -138,8 +140,10 @@
         sendData = sendData.slice(0, -1);
       }
 
+      // 与服务器建立http通道
       var es = new EventSource(param.url+'?'+sendData);
 
+      // 建立默认事件监听：打开、获得消息、错误
       es.addEventListener('open',function (e) {
         param.openEvent(e)
       });
